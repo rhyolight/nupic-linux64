@@ -128,17 +128,6 @@ PyAPI_FUNC(PyObject *) Py_InitModule4(const char *name, PyMethodDef *methods,
 
 PyAPI_DATA(char *) _Py_PackageContext;
 
-/*
-  RHEL-specific extension: support for dealing with uid_t and gid_t without
-  integer overflow
- */
-
-PyAPI_FUNC(PyObject *) _PyObject_FromUid(uid_t uid);
-PyAPI_FUNC(PyObject *) _PyObject_FromGid(gid_t gid);
-
-PyAPI_FUNC(int) _PyArg_ParseUid(PyObject *in_obj, uid_t *out_uid);
-PyAPI_FUNC(int) _PyArg_ParseGid(PyObject *in_obj, gid_t *out_gid);
-
 #ifdef __cplusplus
 }
 #endif
