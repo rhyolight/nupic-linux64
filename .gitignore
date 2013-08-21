@@ -2,3 +2,12 @@
 *.pyo
 nupic/
 nta/
+.build.json
+.buildinfo
+bin/htmtest
+bin/testeverything
+build_system/
+conf/
+env.sh
+share/
+tests/
