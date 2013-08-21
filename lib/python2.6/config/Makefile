@@ -21,7 +21,7 @@
 
 # === Variables set by makesetup ===
 
-MODOBJS=          Modules/threadmodule.o  Modules/signalmodule.o  Modules/posixmodule.o  Modules/errnomodule.o  Modules/pwdmodule.o  Modules/_sre.o  Modules/_codecsmodule.o  Modules/zipimport.o  Modules/symtablemodule.o  Modules/xxsubtype.o
+MODOBJS=          Modules/threadmodule.o  Modules/signalmodule.o  Modules/posixmodule.o  Modules/errnomodule.o  Modules/pwdmodule.o  Modules/_sre.o  Modules/_codecsmodule.o  Modules/zipimport.o  Modules/symtablemodule.o
 MODLIBS=        $(LOCALMODLIBS) $(BASEMODLIBS)
 
 # === Variables set by configure
@@ -32,10 +32,10 @@ srcdir=		.
 CC=		gcc -pthread
 CXX=		g++ -pthread
 MAINCC=		$(CC)
-LINKCC=		$(PURIFY) $(MAINCC)
+LINKCC=		gcc
 AR=		ar
 RANLIB=		ranlib
-SVNVERSION=	svnversion $(srcdir)
+SVNVERSION=	echo Unversioned directory
 
 # Shell used by make (some versions default to the login shell, which is bad)
 SHELL=		/bin/sh
@@ -56,14 +56,14 @@ INSTALL_SHARED= ${INSTALL} -m 555
 MAKESETUP=      $(srcdir)/Modules/makesetup
 
 # Compiler options
-OPT=		-DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
+OPT=		-DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv
 BASECFLAGS=	 -fno-strict-aliasing
-CFLAGS=		$(BASECFLAGS) -g -O2 $(OPT) $(EXTRA_CFLAGS)
+CFLAGS=		$(BASECFLAGS) -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv   $(OPT) $(EXTRA_CFLAGS)
 # Both CPPFLAGS and LDFLAGS need to contain the shell's value for setup.py to
 # be able to build extension modules using the directories specified in the
 # environment variables
-CPPFLAGS=	-I. -IInclude -I$(srcdir)/Include 
-LDFLAGS=	-Wl,-rpath /home/vagrant/python-build/lib
+CPPFLAGS=	-I. -IInclude -I$(srcdir)/Include -I/usr/lib64/libffi-3.0.5/include  
+LDFLAGS=	  
 LDLAST=		
 SGI_ABI=	
 CCSHARED=	-fPIC
@@ -78,21 +78,21 @@ PY_CFLAGS=	$(CFLAGS) $(CPPFLAGS) $(CFLAGSFORSHARED) -DPy_BUILD_CORE
 MACHDEP=	linux2
 
 # Install prefix for architecture-independent files
-prefix=		/home/vagrant/python-build
+prefix=		/usr
 
 # Install prefix for architecture-dependent files
-exec_prefix=	${prefix}
+exec_prefix=	/usr
 
 # Install prefix for data files
 datarootdir=    ${prefix}/share
 
 # Expanded directories
-BINDIR=		${exec_prefix}/bin
-LIBDIR=		${exec_prefix}/lib
-MANDIR=		${datarootdir}/man
-INCLUDEDIR=	${prefix}/include
+BINDIR=		/usr/bin
+LIBDIR=		/usr/lib64
+MANDIR=		/usr/share/man
+INCLUDEDIR=	/usr/include
 CONFINCLUDEDIR=	$(exec_prefix)/include
-SCRIPTDIR=	$(prefix)/lib
+SCRIPTDIR=	$(prefix)/lib64
 
 # Detailed destination directories
 BINLIBDEST=	$(LIBDIR)/python$(VERSION)
@@ -127,7 +127,7 @@ MACOSX_DEPLOYMENT_TARGET=
 OTHER_LIBTOOL_OPT=
 
 # Environment to run shared python without installed libraries
-RUNSHARED=       LD_LIBRARY_PATH=/home/vagrant/Python-2.6.8:/home/vagrant/nupic-linux64/lib:/lib:
+RUNSHARED=       LD_LIBRARY_PATH=/builddir/build/BUILD/Python-2.6.8:
 
 # Modes for directories, executables and data files created by the
 # install process.  Default to user-only-writable for all file types.
@@ -136,7 +136,7 @@ EXEMODE=	755
 FILEMODE=	644
 
 # configure script arguments
-CONFIG_ARGS=	 '--enable-shared' '--prefix=/home/vagrant/python-build' 'LDFLAGS=-Wl,-rpath /home/vagrant/python-build/lib'
+CONFIG_ARGS=	 '--build=x86_64-redhat-linux-gnu' '--host=x86_64-redhat-linux-gnu' '--target=x86_64-amazon-linux-gnu' '--program-prefix=' '--prefix=/usr' '--exec-prefix=/usr' '--bindir=/usr/bin' '--sbindir=/usr/sbin' '--sysconfdir=/etc' '--datadir=/usr/share' '--includedir=/usr/include' '--libdir=/usr/lib64' '--libexecdir=/usr/libexec' '--localstatedir=/var' '--sharedstatedir=/var/lib' '--mandir=/usr/share/man' '--infodir=/usr/share/info' '--enable-ipv6' '--enable-unicode=ucs4' '--enable-shared' '--with-system-ffi' '--with-system-expat' '--with-dtrace' '--with-tapset-install-dir=/usr/share/systemtap/tapset' 'build_alias=x86_64-redhat-linux-gnu' 'host_alias=x86_64-redhat-linux-gnu' 'target_alias=x86_64-amazon-linux-gnu' 'CC=gcc' 'CFLAGS=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv  ' 'LDFLAGS=  ' 'CPPFLAGS=-I/usr/lib64/libffi-3.0.5/include  '
 
 
 # Subdirectories with code
@@ -183,8 +183,12 @@ PROFILE_TASK=	$(srcdir)/Tools/pybench/pybench.py -n 2 --with-gc --with-syscheck
 
 # === Definitions added by makesetup ===
 
-LOCALMODLIBS=          
+LOCALMODLIBS=         
 BASEMODLIBS=
+SHAREDMODS= Modules/readline$(SO) Modules/arraymodule$(SO) Modules/cmathmodule$(SO) Modules/mathmodule$(SO) Modules/_struct$(SO) Modules/timemodule$(SO) Modules/operator$(SO) Modules/_weakref$(SO) Modules/_testcapimodule$(SO) Modules/_randommodule$(SO) Modules/_collectionsmodule$(SO) Modules/itertoolsmodule$(SO) Modules/stropmodule$(SO) Modules/_functoolsmodule$(SO) Modules/_bisectmodule$(SO) Modules/unicodedata$(SO) Modules/_localemodule$(SO) Modules/fcntlmodule$(SO) Modules/spwdmodule$(SO) Modules/grpmodule$(SO) Modules/selectmodule$(SO) Modules/mmapmodule$(SO) Modules/_csv$(SO) Modules/_socketmodule$(SO) Modules/_ssl$(SO) Modules/_cryptmodule$(SO) Modules/nismodule$(SO) Modules/termios$(SO) Modules/resource$(SO) Modules/audioop$(SO) Modules/imageop$(SO) Modules/_md5module$(SO) Modules/_shamodule$(SO) Modules/_sha256module$(SO) Modules/_sha512module$(SO) Modules/linuxaudiodev$(SO) Modules/timingmodule$(SO) Modules/dlmodule$(SO) Modules/gdbmmodule$(SO) Modules/_bsddb$(SO) Modules/binascii$(SO) Modules/parsermodule$(SO) Modules/cStringIO$(SO) Modules/cPickle$(SO) Modules/zlibmodule$(SO) Modules/_multibytecodecmodule$(SO) Modules/_codecs_cn$(SO) Modules/_codecs_hk$(SO) Modules/_codecs_iso2022$(SO) Modules/_codecs_jp$(SO) Modules/_codecs_kr$(SO) Modules/_codecs_tw$(SO) Modules/xxsubtype$(SO)
+DBLIB=/usr/lib64
+DBINC=/usr/include/db4
+DBLIBVER=4.7
 GLHACK=-Dclear=__GLclear
 PYTHONPATH=$(COREPYTHONPATH)
 COREPYTHONPATH=$(DESTPATH)$(SITEPATH)$(TESTPATH)$(MACHDEPPATH)$(EXTRAMACHDEPPATH)$(TKPATH)$(OLDPATH)
@@ -214,6 +218,7 @@ SIGNAL_OBJS=
 
 ##########################################################################
 # Grammar
+GRAMMAR_STAMP=	$(srcdir)/grammar-stamp
 GRAMMAR_H=	$(srcdir)/Include/graminit.h
 GRAMMAR_C=	$(srcdir)/Python/graminit.c
 GRAMMAR_INPUT=	$(srcdir)/Grammar/Grammar
@@ -308,6 +313,7 @@ PYTHON_OBJS=	\
 		Python/formatter_unicode.o \
 		Python/formatter_string.o \
 		Python/$(DYNLOADFILE) \
+		Python/dtrace.o \
 		$(LIBOBJS) \
 		$(MACHDEP_OBJS) \
 		$(THREADOBJ)
@@ -400,8 +406,8 @@ coverage:
 
 
 # Build the interpreter
-$(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)
-		$(LINKCC) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
+$(BUILDPYTHON):	Modules/python.o $(LDLIBRARY)
+		$(LINKCC) $(CFLAGS) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
 			Modules/python.o \
 			$(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
 
@@ -415,18 +421,6 @@ sharedmods: $(BUILDPYTHON)
 	*s*) $(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' LDFLAGS='$(LDFLAGS)' OPT='$(OPT)' ./$(BUILDPYTHON) -E $(srcdir)/setup.py -q build;; \
 	*) $(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' LDFLAGS='$(LDFLAGS)' OPT='$(OPT)' ./$(BUILDPYTHON) -E $(srcdir)/setup.py build;; \
 	esac
-
-# Build static library
-# avoid long command lines, same as LIBRARY_OBJS
-$(LIBRARY): $(LIBRARY_OBJS)
-	-rm -f $@
-	$(AR) cr $@ Modules/getbuildinfo.o
-	$(AR) cr $@ $(PARSER_OBJS)
-	$(AR) cr $@ $(OBJECT_OBJS)
-	$(AR) cr $@ $(PYTHON_OBJS)
-	$(AR) cr $@ $(MODULE_OBJS) $(SIGNAL_OBJS)
-	$(AR) cr $@ $(MODOBJS)
-	$(RANLIB) $@
 
 libpython$(VERSION).so: $(LIBRARY_OBJS)
 	if test $(INSTSONAME) != $(LDLIBRARY); then \
@@ -532,10 +526,24 @@ Modules/getpath.o: $(srcdir)/Modules/getpath.c Makefile
 Modules/python.o: $(srcdir)/Modules/python.c
 	$(MAINCC) -c $(PY_CFLAGS) -o $@ $(srcdir)/Modules/python.c
 
+# GNU "make" interprets rules with two dependents as two copies of the rule.
+# 
+# In a parallel build this can lead to pgen being run twice, once for each of
+# GRAMMAR_H and GRAMMAR_C, leading to race conditions in which the compiler
+# reads a partially-overwritten copy of one of these files, leading to syntax
+# errors (or linker errors if the fragment happens to be syntactically valid C)
+#
+# See http://www.gnu.org/software/hello/manual/automake/Multiple-Outputs.html
+# for more information
+#
+# Introduce ".grammar-stamp" as a contrived single output from PGEN to avoid
+# this:
+$(GRAMMAR_H) $(GRAMMAR_C): $(GRAMMAR_STAMP)
 
-$(GRAMMAR_H) $(GRAMMAR_C): $(PGEN) $(GRAMMAR_INPUT)
+$(GRAMMAR_STAMP): $(PGEN) $(GRAMMAR_INPUT)
 		-@$(INSTALL) -d Include
 		-$(PGEN) $(GRAMMAR_INPUT) $(GRAMMAR_H) $(GRAMMAR_C)
+		touch $(GRAMMAR_STAMP)
 
 $(PGEN):	$(PGENOBJS)
 		$(CC) $(OPT) $(LDFLAGS) $(PGENOBJS) $(LIBS) -o $(PGEN)
@@ -594,6 +602,18 @@ Python/formatter_unicode.o: $(srcdir)/Python/formatter_unicode.c \
 
 Python/formatter_string.o: $(srcdir)/Python/formatter_string.c \
 				$(STRINGLIB_HEADERS)
+
+# Only needed with --with-dtrace
+buildinclude:
+	mkdir -p Include
+
+Include/pydtrace.h: buildinclude $(srcdir)/Include/pydtrace.d
+	dtrace -o $@ $(DFLAGS) -C -h -s $(srcdir)/Include/pydtrace.d
+
+Python/ceval.o: Include/pydtrace.h
+
+Python/dtrace.o: buildinclude $(srcdir)/Include/pydtrace.d Python/ceval.o
+	dtrace -o $@ $(DFLAGS) -C -G -s $(srcdir)/Include/pydtrace.d Python/ceval.o
 
 ############################################################################
 # Header files
@@ -843,6 +863,7 @@ LIBSUBDIRS=	lib-tk site-packages test test/output test/data \
 		sqlite3 sqlite3/test \
 		logging bsddb bsddb/test csv wsgiref \
 		lib2to3 lib2to3/fixes lib2to3/pgen2 lib2to3/tests \
+		lib2to3/tests/data lib2to3/tests/data/fixers lib2to3/tests/data/fixers/myfixes \
 		ctypes ctypes/test ctypes/macholib idlelib idlelib/Icons \
 		distutils distutils/command distutils/tests $(XMLLIBSUBDIRS) \
 		multiprocessing multiprocessing/dummy \
@@ -907,11 +928,13 @@ libinstall:	build_all $(srcdir)/Lib/$(PLATDIR)
 	PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
 		./$(BUILDPYTHON) -Wi -tt $(DESTDIR)$(LIBDEST)/compileall.py \
 		-d $(LIBDEST) -f \
-		-x 'bad_coding|badsyntax|site-packages' $(DESTDIR)$(LIBDEST)
+		-x 'bad_coding|badsyntax|site-packages|py3_test_grammar' \
+		$(DESTDIR)$(LIBDEST)
 	PYTHONPATH=$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
 		./$(BUILDPYTHON) -Wi -tt -O $(DESTDIR)$(LIBDEST)/compileall.py \
 		-d $(LIBDEST) -f \
-		-x 'bad_coding|badsyntax|site-packages' $(DESTDIR)$(LIBDEST)
+		-x 'bad_coding|badsyntax|site-packages|py3_test_grammar' \
+		$(DESTDIR)$(LIBDEST)
 	-PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
 		./$(BUILDPYTHON) -Wi -t $(DESTDIR)$(LIBDEST)/compileall.py \
 		-d $(LIBDEST)/site-packages -f \
@@ -963,18 +986,6 @@ libainstall:	all
 		else	true; \
 		fi; \
 	done
-	@if test -d $(LIBRARY); then :; else \
-		if test "$(PYTHONFRAMEWORKDIR)" = no-framework; then \
-			if test "$(SO)" = .dll; then \
-				$(INSTALL_DATA) $(LDLIBRARY) $(DESTDIR)$(LIBPL) ; \
-			else \
-				$(INSTALL_DATA) $(LIBRARY) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
-				$(RANLIB) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
-			fi; \
-		else \
-			echo Skip install of $(LIBRARY) - use make frameworkinstall; \
-		fi; \
-	fi
 	$(INSTALL_DATA) Modules/config.c $(DESTDIR)$(LIBPL)/config.c
 	$(INSTALL_DATA) Modules/python.o $(DESTDIR)$(LIBPL)/python.o
 	$(INSTALL_DATA) $(srcdir)/Modules/config.c.in $(DESTDIR)$(LIBPL)/config.c.in
@@ -1233,7 +1244,7 @@ Python/thread.o:  $(srcdir)/Python/thread_atheos.h $(srcdir)/Python/thread_beos.
 .PHONY: frameworkinstall frameworkinstallframework frameworkinstallstructure
 .PHONY: frameworkinstallmaclib frameworkinstallapps frameworkinstallunixtools
 .PHONY: frameworkaltinstallunixtools recheck autoconf clean clobber distclean 
-.PHONY: smelly funny patchcheck
+.PHONY: smelly funny patchcheck buildinclude
 
 # IF YOU PUT ANYTHING HERE IT WILL GO AWAY
 
@@ -1257,5 +1268,110 @@ Modules/zipimport.o: $(srcdir)/Modules/zipimport.c; $(CC) $(PY_CFLAGS)  -c $(src
 Modules/zipimport$(SO):  Modules/zipimport.o; $(BLDSHARED)  Modules/zipimport.o   -o Modules/zipimport$(SO)
 Modules/symtablemodule.o: $(srcdir)/Modules/symtablemodule.c; $(CC) $(PY_CFLAGS)  -c $(srcdir)/Modules/symtablemodule.c -o Modules/symtablemodule.o
 Modules/_symtablemodule$(SO):  Modules/symtablemodule.o; $(BLDSHARED)  Modules/symtablemodule.o   -o Modules/_symtablemodule$(SO)
-Modules/xxsubtype.o: $(srcdir)/Modules/xxsubtype.c; $(CC) $(PY_CFLAGS)  -c $(srcdir)/Modules/xxsubtype.c -o Modules/xxsubtype.o
+Modules/readline.o: $(srcdir)/Modules/readline.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/readline.c -o Modules/readline.o
+Modules/readline$(SO):  Modules/readline.o; $(BLDSHARED)  Modules/readline.o  -lreadline -ltermcap  -o Modules/readline$(SO)
+Modules/arraymodule.o: $(srcdir)/Modules/arraymodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/arraymodule.c -o Modules/arraymodule.o
+Modules/arraymodule$(SO):  Modules/arraymodule.o; $(BLDSHARED)  Modules/arraymodule.o   -o Modules/arraymodule$(SO)
+Modules/cmathmodule.o: $(srcdir)/Modules/cmathmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cmathmodule.c -o Modules/cmathmodule.o
+Modules/cmathmodule$(SO):  Modules/cmathmodule.o; $(BLDSHARED)  Modules/cmathmodule.o   -o Modules/cmathmodule$(SO)
+Modules/mathmodule.o: $(srcdir)/Modules/mathmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/mathmodule.c -o Modules/mathmodule.o
+Modules/mathmodule$(SO):  Modules/mathmodule.o; $(BLDSHARED)  Modules/mathmodule.o   -o Modules/mathmodule$(SO)
+Modules/_struct.o: $(srcdir)/Modules/_struct.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_struct.c -o Modules/_struct.o
+Modules/_struct$(SO):  Modules/_struct.o; $(BLDSHARED)  Modules/_struct.o   -o Modules/_struct$(SO)
+Modules/timemodule.o: $(srcdir)/Modules/timemodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/timemodule.c -o Modules/timemodule.o
+Modules/timemodule$(SO):  Modules/timemodule.o; $(BLDSHARED)  Modules/timemodule.o   -o Modules/timemodule$(SO)
+Modules/operator.o: $(srcdir)/Modules/operator.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/operator.c -o Modules/operator.o
+Modules/operator$(SO):  Modules/operator.o; $(BLDSHARED)  Modules/operator.o   -o Modules/operator$(SO)
+Modules/_weakref.o: $(srcdir)/Modules/_weakref.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_weakref.c -o Modules/_weakref.o
+Modules/_weakref$(SO):  Modules/_weakref.o; $(BLDSHARED)  Modules/_weakref.o   -o Modules/_weakref$(SO)
+Modules/_testcapimodule.o: $(srcdir)/Modules/_testcapimodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_testcapimodule.c -o Modules/_testcapimodule.o
+Modules/_testcapimodule$(SO):  Modules/_testcapimodule.o; $(BLDSHARED)  Modules/_testcapimodule.o   -o Modules/_testcapimodule$(SO)
+Modules/_randommodule.o: $(srcdir)/Modules/_randommodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_randommodule.c -o Modules/_randommodule.o
+Modules/_randommodule$(SO):  Modules/_randommodule.o; $(BLDSHARED)  Modules/_randommodule.o   -o Modules/_randommodule$(SO)
+Modules/_collectionsmodule.o: $(srcdir)/Modules/_collectionsmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_collectionsmodule.c -o Modules/_collectionsmodule.o
+Modules/_collectionsmodule$(SO):  Modules/_collectionsmodule.o; $(BLDSHARED)  Modules/_collectionsmodule.o   -o Modules/_collectionsmodule$(SO)
+Modules/itertoolsmodule.o: $(srcdir)/Modules/itertoolsmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/itertoolsmodule.c -o Modules/itertoolsmodule.o
+Modules/itertoolsmodule$(SO):  Modules/itertoolsmodule.o; $(BLDSHARED)  Modules/itertoolsmodule.o   -o Modules/itertoolsmodule$(SO)
+Modules/stropmodule.o: $(srcdir)/Modules/stropmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/stropmodule.c -o Modules/stropmodule.o
+Modules/stropmodule$(SO):  Modules/stropmodule.o; $(BLDSHARED)  Modules/stropmodule.o   -o Modules/stropmodule$(SO)
+Modules/_functoolsmodule.o: $(srcdir)/Modules/_functoolsmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_functoolsmodule.c -o Modules/_functoolsmodule.o
+Modules/_functoolsmodule$(SO):  Modules/_functoolsmodule.o; $(BLDSHARED)  Modules/_functoolsmodule.o   -o Modules/_functoolsmodule$(SO)
+Modules/_bisectmodule.o: $(srcdir)/Modules/_bisectmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_bisectmodule.c -o Modules/_bisectmodule.o
+Modules/_bisectmodule$(SO):  Modules/_bisectmodule.o; $(BLDSHARED)  Modules/_bisectmodule.o   -o Modules/_bisectmodule$(SO)
+Modules/unicodedata.o: $(srcdir)/Modules/unicodedata.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/unicodedata.c -o Modules/unicodedata.o
+Modules/unicodedata$(SO):  Modules/unicodedata.o; $(BLDSHARED)  Modules/unicodedata.o   -o Modules/unicodedata$(SO)
+Modules/_localemodule.o: $(srcdir)/Modules/_localemodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_localemodule.c -o Modules/_localemodule.o
+Modules/_localemodule$(SO):  Modules/_localemodule.o; $(BLDSHARED)  Modules/_localemodule.o   -o Modules/_localemodule$(SO)
+Modules/fcntlmodule.o: $(srcdir)/Modules/fcntlmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/fcntlmodule.c -o Modules/fcntlmodule.o
+Modules/fcntlmodule$(SO):  Modules/fcntlmodule.o; $(BLDSHARED)  Modules/fcntlmodule.o   -o Modules/fcntlmodule$(SO)
+Modules/spwdmodule.o: $(srcdir)/Modules/spwdmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/spwdmodule.c -o Modules/spwdmodule.o
+Modules/spwdmodule$(SO):  Modules/spwdmodule.o; $(BLDSHARED)  Modules/spwdmodule.o   -o Modules/spwdmodule$(SO)
+Modules/grpmodule.o: $(srcdir)/Modules/grpmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/grpmodule.c -o Modules/grpmodule.o
+Modules/grpmodule$(SO):  Modules/grpmodule.o; $(BLDSHARED)  Modules/grpmodule.o   -o Modules/grpmodule$(SO)
+Modules/selectmodule.o: $(srcdir)/Modules/selectmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/selectmodule.c -o Modules/selectmodule.o
+Modules/selectmodule$(SO):  Modules/selectmodule.o; $(BLDSHARED)  Modules/selectmodule.o   -o Modules/selectmodule$(SO)
+Modules/mmapmodule.o: $(srcdir)/Modules/mmapmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/mmapmodule.c -o Modules/mmapmodule.o
+Modules/mmapmodule$(SO):  Modules/mmapmodule.o; $(BLDSHARED)  Modules/mmapmodule.o   -o Modules/mmapmodule$(SO)
+Modules/_csv.o: $(srcdir)/Modules/_csv.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_csv.c -o Modules/_csv.o
+Modules/_csv$(SO):  Modules/_csv.o; $(BLDSHARED)  Modules/_csv.o   -o Modules/_csv$(SO)
+Modules/socketmodule.o: $(srcdir)/Modules/socketmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/socketmodule.c -o Modules/socketmodule.o
+Modules/_socketmodule$(SO):  Modules/socketmodule.o; $(BLDSHARED)  Modules/socketmodule.o   -o Modules/_socketmodule$(SO)
+Modules/_ssl.o: $(srcdir)/Modules/_ssl.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -DUSE_SSL -I$(SSL)/include -I$(SSL)/include/openssl -c $(srcdir)/Modules/_ssl.c -o Modules/_ssl.o
+Modules/_ssl$(SO):  Modules/_ssl.o; $(BLDSHARED)  Modules/_ssl.o  -L$(SSL)/lib -lssl -lcrypto  -o Modules/_ssl$(SO)
+Modules/_cryptmodule.o: $(srcdir)/Modules/_cryptmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/_cryptmodule.c -o Modules/_cryptmodule.o
+Modules/_cryptmodule$(SO):  Modules/_cryptmodule.o; $(BLDSHARED)  Modules/_cryptmodule.o  -lcrypt  -o Modules/_cryptmodule$(SO)
+Modules/nismodule.o: $(srcdir)/Modules/nismodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/nismodule.c -o Modules/nismodule.o
+Modules/nismodule$(SO):  Modules/nismodule.o; $(BLDSHARED)  Modules/nismodule.o  -lnsl  -o Modules/nismodule$(SO)
+Modules/termios.o: $(srcdir)/Modules/termios.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/termios.c -o Modules/termios.o
+Modules/termios$(SO):  Modules/termios.o; $(BLDSHARED)  Modules/termios.o   -o Modules/termios$(SO)
+Modules/resource.o: $(srcdir)/Modules/resource.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/resource.c -o Modules/resource.o
+Modules/resource$(SO):  Modules/resource.o; $(BLDSHARED)  Modules/resource.o   -o Modules/resource$(SO)
+Modules/audioop.o: $(srcdir)/Modules/audioop.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/audioop.c -o Modules/audioop.o
+Modules/audioop$(SO):  Modules/audioop.o; $(BLDSHARED)  Modules/audioop.o   -o Modules/audioop$(SO)
+Modules/imageop.o: $(srcdir)/Modules/imageop.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/imageop.c -o Modules/imageop.o
+Modules/imageop$(SO):  Modules/imageop.o; $(BLDSHARED)  Modules/imageop.o   -o Modules/imageop$(SO)
+Modules/md5module.o: $(srcdir)/Modules/md5module.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/md5module.c -o Modules/md5module.o
+Modules/md5.o: $(srcdir)/Modules/md5.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/md5.c -o Modules/md5.o
+Modules/_md5module$(SO):  Modules/md5module.o Modules/md5.o; $(BLDSHARED)  Modules/md5module.o Modules/md5.o   -o Modules/_md5module$(SO)
+Modules/shamodule.o: $(srcdir)/Modules/shamodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/shamodule.c -o Modules/shamodule.o
+Modules/_shamodule$(SO):  Modules/shamodule.o; $(BLDSHARED)  Modules/shamodule.o   -o Modules/_shamodule$(SO)
+Modules/sha256module.o: $(srcdir)/Modules/sha256module.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/sha256module.c -o Modules/sha256module.o
+Modules/_sha256module$(SO):  Modules/sha256module.o; $(BLDSHARED)  Modules/sha256module.o   -o Modules/_sha256module$(SO)
+Modules/sha512module.o: $(srcdir)/Modules/sha512module.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/sha512module.c -o Modules/sha512module.o
+Modules/_sha512module$(SO):  Modules/sha512module.o; $(BLDSHARED)  Modules/sha512module.o   -o Modules/_sha512module$(SO)
+Modules/linuxaudiodev.o: $(srcdir)/Modules/linuxaudiodev.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/linuxaudiodev.c -o Modules/linuxaudiodev.o
+Modules/linuxaudiodev$(SO):  Modules/linuxaudiodev.o; $(BLDSHARED)  Modules/linuxaudiodev.o   -o Modules/linuxaudiodev$(SO)
+Modules/timingmodule.o: $(srcdir)/Modules/timingmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/timingmodule.c -o Modules/timingmodule.o
+Modules/timingmodule$(SO):  Modules/timingmodule.o; $(BLDSHARED)  Modules/timingmodule.o   -o Modules/timingmodule$(SO)
+Modules/dlmodule.o: $(srcdir)/Modules/dlmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/dlmodule.c -o Modules/dlmodule.o
+Modules/dlmodule$(SO):  Modules/dlmodule.o; $(BLDSHARED)  Modules/dlmodule.o   -o Modules/dlmodule$(SO)
+Modules/gdbmmodule.o: $(srcdir)/Modules/gdbmmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/gdbmmodule.c -o Modules/gdbmmodule.o
+Modules/gdbmmodule$(SO):  Modules/gdbmmodule.o; $(BLDSHARED)  Modules/gdbmmodule.o  -lgdbm  -o Modules/gdbmmodule$(SO)
+Modules/_bsddb.o: $(srcdir)/Modules/_bsddb.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -I$(DBINC) -c $(srcdir)/Modules/_bsddb.c -o Modules/_bsddb.o
+Modules/_bsddb$(SO):  Modules/_bsddb.o; $(BLDSHARED)  Modules/_bsddb.o  -L$(DBLIB) -ldb-$(DBLIBVER)  -o Modules/_bsddb$(SO)
+Modules/binascii.o: $(srcdir)/Modules/binascii.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/binascii.c -o Modules/binascii.o
+Modules/binascii$(SO):  Modules/binascii.o; $(BLDSHARED)  Modules/binascii.o   -o Modules/binascii$(SO)
+Modules/parsermodule.o: $(srcdir)/Modules/parsermodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/parsermodule.c -o Modules/parsermodule.o
+Modules/parsermodule$(SO):  Modules/parsermodule.o; $(BLDSHARED)  Modules/parsermodule.o   -o Modules/parsermodule$(SO)
+Modules/cStringIO.o: $(srcdir)/Modules/cStringIO.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cStringIO.c -o Modules/cStringIO.o
+Modules/cStringIO$(SO):  Modules/cStringIO.o; $(BLDSHARED)  Modules/cStringIO.o   -o Modules/cStringIO$(SO)
+Modules/cPickle.o: $(srcdir)/Modules/cPickle.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cPickle.c -o Modules/cPickle.o
+Modules/cPickle$(SO):  Modules/cPickle.o; $(BLDSHARED)  Modules/cPickle.o   -o Modules/cPickle$(SO)
+Modules/zlibmodule.o: $(srcdir)/Modules/zlibmodule.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -I$(prefix)/include -c $(srcdir)/Modules/zlibmodule.c -o Modules/zlibmodule.o
+Modules/zlibmodule$(SO):  Modules/zlibmodule.o; $(BLDSHARED)  Modules/zlibmodule.o  -L$(exec_prefix)/lib64 -lz  -o Modules/zlibmodule$(SO)
+Modules/multibytecodec.o: $(srcdir)/Modules/cjkcodecs/multibytecodec.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cjkcodecs/multibytecodec.c -o Modules/multibytecodec.o
+Modules/_multibytecodecmodule$(SO):  Modules/multibytecodec.o; $(BLDSHARED)  Modules/multibytecodec.o   -o Modules/_multibytecodecmodule$(SO)
+Modules/_codecs_cn.o: $(srcdir)/Modules/cjkcodecs/_codecs_cn.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cjkcodecs/_codecs_cn.c -o Modules/_codecs_cn.o
+Modules/_codecs_cn$(SO):  Modules/_codecs_cn.o; $(BLDSHARED)  Modules/_codecs_cn.o   -o Modules/_codecs_cn$(SO)
+Modules/_codecs_hk.o: $(srcdir)/Modules/cjkcodecs/_codecs_hk.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cjkcodecs/_codecs_hk.c -o Modules/_codecs_hk.o
+Modules/_codecs_hk$(SO):  Modules/_codecs_hk.o; $(BLDSHARED)  Modules/_codecs_hk.o   -o Modules/_codecs_hk$(SO)
+Modules/_codecs_iso2022.o: $(srcdir)/Modules/cjkcodecs/_codecs_iso2022.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cjkcodecs/_codecs_iso2022.c -o Modules/_codecs_iso2022.o
+Modules/_codecs_iso2022$(SO):  Modules/_codecs_iso2022.o; $(BLDSHARED)  Modules/_codecs_iso2022.o   -o Modules/_codecs_iso2022$(SO)
+Modules/_codecs_jp.o: $(srcdir)/Modules/cjkcodecs/_codecs_jp.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cjkcodecs/_codecs_jp.c -o Modules/_codecs_jp.o
+Modules/_codecs_jp$(SO):  Modules/_codecs_jp.o; $(BLDSHARED)  Modules/_codecs_jp.o   -o Modules/_codecs_jp$(SO)
+Modules/_codecs_kr.o: $(srcdir)/Modules/cjkcodecs/_codecs_kr.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cjkcodecs/_codecs_kr.c -o Modules/_codecs_kr.o
+Modules/_codecs_kr$(SO):  Modules/_codecs_kr.o; $(BLDSHARED)  Modules/_codecs_kr.o   -o Modules/_codecs_kr$(SO)
+Modules/_codecs_tw.o: $(srcdir)/Modules/cjkcodecs/_codecs_tw.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/cjkcodecs/_codecs_tw.c -o Modules/_codecs_tw.o
+Modules/_codecs_tw$(SO):  Modules/_codecs_tw.o; $(BLDSHARED)  Modules/_codecs_tw.o   -o Modules/_codecs_tw$(SO)
+Modules/xxsubtype.o: $(srcdir)/Modules/xxsubtype.c; $(CC) $(CCSHARED) $(CFLAGS) $(CPPFLAGS)  -c $(srcdir)/Modules/xxsubtype.c -o Modules/xxsubtype.o
 Modules/xxsubtype$(SO):  Modules/xxsubtype.o; $(BLDSHARED)  Modules/xxsubtype.o   -o Modules/xxsubtype$(SO)

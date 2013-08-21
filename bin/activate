@@ -81,7 +81,7 @@ if [ -n "$BASH" -o -n "$ZSH_VERSION" ] ; then
 fi
 
 # Installation path
-export NTA=$VIRTUAL_ENV/nta/eng
+export NTA=$VIRTUAL_ENV
 # Convenience variable for temporary build files
 export BUILDDIR=/tmp/ntabuild
 # Number of jobs to run in parallel (optional)
