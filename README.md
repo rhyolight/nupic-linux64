@@ -1,18 +1,19 @@
-# nupic-darwin64
+# nupic-linux64
 
-Python distribution for NuPIC on OS X.  This project provides a
-fully-functional python environment in which to build and run
-[NuPIC](https://github.com/numenta/nupic) in a darwin64 (OS X) environment.
+Python distribution for NuPIC on 64-bit linux.  Originally created from a
+[virtualenv](http://www.virtualenv.org/en/latest/)-based NuPIC installation
+on linux, this project provides a fully-functional python environment in which
+to build and run [NuPIC](https://github.com/numenta/nupic)
 
 ## Usage
 
 Clone this repository:
 
-    git clone https://github.com/numenta/nupic-darwin64.git
+    git clone https://github.com/numenta/nupic-linux64.git
 
 Activate your environment:
 
-    source nupic-darwin64/bin/activate
+    source nupic-linux64/bin/activate
 
 Build NuPIC:
 
