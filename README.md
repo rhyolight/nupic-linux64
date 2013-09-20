@@ -1,9 +1,8 @@
 # nupic-linux64
 
-Python distribution for NuPIC on 64-bit linux.  Originally created from a
-[virtualenv](http://www.virtualenv.org/en/latest/)-based NuPIC installation
-on linux, this project provides a fully-functional python environment in which
-to build and run [NuPIC](https://github.com/numenta/nupic)
+Python distribution for NuPIC on linux.  This project provides a
+fully-functional python environment in which to build and run
+[NuPIC](https://github.com/numenta/nupic) in a 64-bit linux environment.
 
 ## Usage
 
@@ -21,3 +20,10 @@ Build NuPIC:
 
 See https://github.com/numenta/nupic#try-it-out for further instructions for
 using NuPIC.
+
+## Building nupic requirements
+
+A Makefile is provided should you need to reconstruct this environment.
+
+    source bin/activate
+    make
