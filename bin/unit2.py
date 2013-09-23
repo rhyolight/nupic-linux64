@@ -1,4 +1,4 @@
-#!/home/vagrant/nupic-linux64/bin/python
+#!/usr/bin/env python
 
 __unittest = True
 
