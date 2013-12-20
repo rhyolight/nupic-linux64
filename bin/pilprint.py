@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/opt/numenta/anaconda/bin/python
 #
 # The Python Imaging Library.
 # $Id$

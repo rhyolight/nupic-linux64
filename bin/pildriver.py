@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/opt/numenta/anaconda/bin/python
 """PILdriver, an image-processing calculator using PIL.
 
 An instance of class PILDriver is essentially a software stack machine
