@@ -43,7 +43,7 @@ deactivate_nupic () {
 # unset irrelavent variables
 deactivate_nupic nondestructive
 
-PY_VERSION=`python -c 'import sys; print sys.version[:3]'`
+PY_VERSION=`python -c 'import sys; print(sys.version[:3])'`
 
 NUPIC_ENV="$(dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 export NUPIC_ENV
