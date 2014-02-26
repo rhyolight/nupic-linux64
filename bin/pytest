@@ -1,4 +1,4 @@
-#!/opt/numenta/anaconda/bin/python -u
+#!/usr/bin/env python
 
 import warnings
 warnings.simplefilter('default', DeprecationWarning)
