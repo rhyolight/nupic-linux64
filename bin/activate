@@ -44,7 +44,7 @@ NUPIC_ENV="$(dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 export NUPIC_ENV
 
 _OLD_NUPIC_VIRTUAL_PYTHONPATH="$PYTHONPATH"
-export PYTHONPATH="$NUPIC_ENV/lib64/python$PY_VERSION/site-packages:$NUPIC_ENV/lib/python$PY_VERSION/site-packages:$PYTHONPATH"
+export PYTHONPATH="$NUPIC_ENV/lib/python$PY_VERSION/site-packages:$PYTHONPATH"
 
 _OLD_NUPIC_VIRTUAL_PATH="$PATH"
 export PATH="$NUPIC_ENV/bin:$PATH"
@@ -65,6 +65,9 @@ fi
 if [[ ! -n $NTA ]] ; then
   export NTA=$NUPIC_ENV/nta/eng
 fi
+
+export PYTHONPATH=$PYTHONPATH:$NTA/lib/python$PY_VERSION/site-packages
+
 # Convenience variable for temporary build files
 if [[ ! -n $BUILDDIR ]] ; then
   export BUILDDIR=/tmp/ntabuild
