@@ -1,4 +1,4 @@
-#!/opt/numenta/anaconda/bin/python
+#!/usr/bin/env python
 
 __unittest = True
 
