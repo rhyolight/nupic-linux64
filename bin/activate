@@ -20,6 +20,12 @@ deactivate_nupic () {
         export LD_LIBRARY_PATH
         unset _OLD_NUPIC_VIRTUAL_LD_LIBRARY_PATH
     fi
+    if [ -n "$_OLD_NUPIC_VIRTUAL_NTA_DATA_PATH" ] ; then
+        NTA_DATA_PATH="$_OLD_NUPIC_VIRTUAL_NTA_DATA_PATH"
+        export NTA_DATA_PATH
+        unset _OLD_NUPIC_VIRTUAL_NTA_DATA_PATH
+    fi
+
 
     # This should detect bash and zsh, which have a hash command that must
     # be called to get it to forget past commands.  Without forgetting
@@ -50,7 +56,7 @@ _OLD_NUPIC_VIRTUAL_PATH="$PATH"
 export PATH="$NUPIC_ENV/bin:$PATH"
 
 _OLD_NUPIC_VIRTUAL_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH=$NUPIC_ENV/lib64:$NUPIC_ENV/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="$NUPIC_ENV/lib:$LD_LIBRARY_PATH"
 
 alias pydoc="python -m pydoc"
 
@@ -68,6 +74,9 @@ fi
 
 export PYTHONPATH=$PYTHONPATH:$NTA/lib/python$PY_VERSION/site-packages
 
+_OLD_NUPIC_VIRTUAL_NTA_DATA_PATH="$NTA_DATA_PATH"
+export NTA_DATA_PATH="$NTA/share/prediction/data:$NTA_DATA_PATH"
+
 # Convenience variable for temporary build files
 if [[ ! -n $BUILDDIR ]] ; then
   export BUILDDIR=/tmp/ntabuild
@@ -84,6 +93,7 @@ echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "MK_JOBS=$MKJOBS"
 echo "NUPIC=$NUPIC"
 echo "NTA=$NTA"
+echo "NTA_DATA_PATH=$NTA_DATA_PATH"
 echo "PATH=$PATH"
 echo "PYTHONPATH=$PYTHONPATH"
 echo ""
