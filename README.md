@@ -16,12 +16,10 @@ Activate your environment:
 
 Build NuPIC:
 
-    $NUPIC/build.sh
+See https://github.com/numenta/nupic#configure-and-generate-build-files for
+details.
 
-See https://github.com/numenta/nupic#try-it-out for further instructions for
-using NuPIC.
-
-To exit this environment when you are done: 
+To exit this environment when you are done:
 
     deactivate_nupic
 
